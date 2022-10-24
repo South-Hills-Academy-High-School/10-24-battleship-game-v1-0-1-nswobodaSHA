@@ -11,24 +11,22 @@ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     grid.place(shadowCursor, tiles.getTileLocation(grid.spriteCol(cursor), grid.spriteRow(cursor) + 1))
 })
 function updatePX (whichPlayer: string) {
-    if (moveBoatFlag == 1) {
-        if (whichPlayer == "Player1") {
-            moveBoat(boatSpriteArrayP1[currentBoat], boatRotateArrayP1)
-            if (isOverlapping(boatSpriteArrayP1)) {
-                if (rotateFlag != "nothing") {
-                    boatRotateArrayP1[currentBoat] = rotateFlag
-                } else {
-                    grid.place(cursor, grid.getLocation(shadowCursor))
-                }
+    if (whichPlayer == "Player1") {
+        moveBoat(boatSpriteArrayP1[currentBoat], boatRotateArrayP1)
+        if (isOverlapping(boatSpriteArrayP1)) {
+            if (rotateFlag != "nothing") {
+                boatRotateArrayP1[currentBoat] = rotateFlag
+            } else {
+                grid.place(cursor, grid.getLocation(shadowCursor))
             }
-        } else {
-            moveBoat(boatSpriteArrayP2[currentBoat], boatRotateArrayP2)
-            if (isOverlapping(boatSpriteArrayP2)) {
-                if (rotateFlag != "nothing") {
-                    boatRotateArrayP2[currentBoat] = rotateFlag
-                } else {
-                    grid.place(cursor, grid.getLocation(shadowCursor))
-                }
+        }
+    } else {
+        moveBoat(boatSpriteArrayP2[currentBoat], boatRotateArrayP2)
+        if (isOverlapping(boatSpriteArrayP2)) {
+            if (rotateFlag != "nothing") {
+                boatRotateArrayP2[currentBoat] = rotateFlag
+            } else {
+                grid.place(cursor, grid.getLocation(shadowCursor))
             }
         }
     }
@@ -49,11 +47,16 @@ function makeBoatVisible (boatArray: Sprite[]) {
     }
 }
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    currentBoat += 1
-    grid.place(cursor, tiles.getTileLocation(0, 0))
-    if (currentBoat == 3) {
-        currentBoat = 0
-        switchPlayer()
+    if (moveBoatFlag == 3) {
+    	
+    } else {
+        currentBoat += 1
+        grid.place(cursor, tiles.getTileLocation(0, 0))
+        if (currentBoat == 3) {
+            currentBoat = 0
+            switchPlayer()
+            moveBoatFlag += 1
+        }
     }
 })
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
@@ -62,6 +65,9 @@ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
     grid.place(shadowCursor, tiles.getTileLocation(grid.spriteCol(cursor) + 1, grid.spriteRow(cursor)))
 })
 function switchPlayer () {
+    if (moveBoatFlag == 2) {
+        cursor.setFlag(SpriteFlag.Invisible, false)
+    }
     if (currentPlayer == "Player1") {
         currentPlayer = "Player2"
         for (let value of boatSpriteArrayP1) {
@@ -527,5 +533,7 @@ shadowCursor = sprites.create(img`
 grid.snap(cursor)
 grid.snap(shadowCursor)
 game.onUpdate(function () {
-    updatePX(currentPlayer)
+    if (moveBoatFlag < 3) {
+        updatePX(currentPlayer)
+    }
 })
